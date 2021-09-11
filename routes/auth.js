@@ -3,7 +3,9 @@ const User = require("../models/Users");
 const router = express.Router();
 // For Express Validation
 const { body, validationResult } = require("express-validator");
-const { findOne } = require("../models/Users");
+// Import Bycrypt Librar For Password Encryption
+const bcrypt = require('bcryptjs');
+
 
 // Signup Route For User , Doesnot Require Auth
 router.post(
@@ -23,11 +25,14 @@ router.post(
       if (user) {
         return res.status(401).json({ error: "Email Is Already Registered !" });
       }
-      user = await Userd.create({
+      let salt = await bcrypt.genSaltSync(10);
+      let hashedPassword = await bcrypt.hashSync(req.body.password, salt);
+      user = await User.create({
         name: req.body.name,
         email: req.body.email,
-        password: req.body.password,
+        password: hashedPassword,
       });
+      return res.status(200).json({message : "User Created Successfully !"})
     } catch (err) {
       console.log(err);
       res.status(500).send("Internal Server Error");
