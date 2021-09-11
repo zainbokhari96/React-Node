@@ -22,5 +22,9 @@ const userSchema = new Schema({
     }
   });
 
+const user = mongoose.model('user',userSchema)
 
-module.exports = mongoose.model('user',userSchema)
+// Use IF You Want To Check For Unique Email Automatically
+// user.createIndexes()
+
+module.exports = user
