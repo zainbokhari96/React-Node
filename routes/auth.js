@@ -6,10 +6,11 @@ const { body, validationResult } = require("express-validator");
 // Import Bycrypt Librar For Password Encryption
 const bcrypt = require("bcryptjs");
 //  Import JWT For Login Token
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 // Private Key Must Be Save In ENV Files Not Here , Must Read From ENV Files In Production
-const privateKey = 'ZainPrivateKeyForTesting'
-
+const privateKey = "ZainPrivateKeyForTesting";
+// Import Middleware For User Authentication
+var verifyToken = require('../middleware/verifyToken');
 
 // Signup Route For User , Doesnot Require Login
 router.post(
@@ -60,7 +61,7 @@ router.post(
     // Try Catch For Async await
     try {
       const { email, password } = req.body;
-      let user = await User.findOne({email});
+      let user = await User.findOne({ email });
       if (!user) {
         return res.status(401).json({ error: "User Not Exists" });
       }
@@ -72,12 +73,24 @@ router.post(
           .json({ message: "Please Login With Correct Credentials" });
       }
       const token = await jwt.sign({ id: user.id }, privateKey);
-      return res.status(200).json({token:token});
+      return res.status(200).json({ token: token });
     } catch (err) {
       console.log(err);
       res.status(500).send("Internal Server Error");
     }
   }
 );
+
+// Fetch User Detail Route With Middleware
+router.post("/get-user", verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId).select("-password");
+    res.send(user);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 module.exports = router;
