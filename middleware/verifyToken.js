@@ -5,7 +5,7 @@ const privateKey = "ZainPrivateKeyForTesting";
 
 const verifyToken = (req,res,next) => {
     // Get the user from JWT token and user id to req object
-    const token = req.header('auth-token')
+    const token = req.header('token')
     if(!token){
         res.status(401).send({error:'Please Authenticate Using a Valid Token'})
     }

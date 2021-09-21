@@ -1,9 +1,12 @@
 const connectToMongo = require("./db")
 const express = require('express')
-
+var cors = require('cors')
 connectToMongo();
 const app = express()
 const port = 3000
+
+// Resolve CORS Error
+app.use(cors())
 
 // Use Json In Request For Endpoints
 app.use(express.json())
